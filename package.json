@@ -1,0 +1,24 @@
+{
+  "name": "emp-tacker",
+  "version": "1.0.0",
+  "description": "architect and build a solution for managing a company's employees using node, inquirer, and MySQL",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dsparr1010/Emp-Tacker.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dsparr1010/Emp-Tacker/issues"
+  },
+  "homepage": "https://github.com/dsparr1010/Emp-Tacker#readme",
+  "dependencies": {
+    "inquirer": "^7.0.0",
+    "mysql": "^2.17.1"
+  }
+}
