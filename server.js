@@ -23,16 +23,18 @@ var connection = mysql.createConnection({
     return inquirer
       .prompt([
         {
-          message: "Welcome to your Company's database! Would you like to: ",
-          message: "1) Add to departments, roles, employees",
-          message: "2) View departments, roles, and employees OR",
-          message: "3) Update employee roles",
+          message: "Welcome to your Company's database! Would you like to: \n" + 
+          "1) Add to departments, roles, employees \n" +
+          "2) View departments, roles, and employees OR \n" + 
+          "3) Update employee roles \n"+
+          "4) Delete a department, role, or employee \n",
           name: "initial",
           type: "list",
           choices: [
               "1) Add",
               "2) View",
-              "3) Update"
+              "3) Update",
+              "4) Delete"
             ]
         }])
   };
@@ -68,10 +70,11 @@ var connection = mysql.createConnection({
                         },
                         function(err, res) {
                           if (err) throw err;
-                          console.log(res.affectedRows + " product inserted!\n");
-                        // queryAllProducts();
+                          console.log(res.affectedRows + " department inserted!\n");
+                          ques();
                         }
                       );
+                      
                 })
             }
             if (response.add === 'Roles') {
@@ -89,7 +92,7 @@ var connection = mysql.createConnection({
                     type: "number"
                  }
                 ]).then(function(result) {
-                    console.log("Inserting a new product...\n");
+                    console.log("Inserting a new role...\n");
                     var query = connection.query(
                         "INSERT INTO role SET ?",
                         {
@@ -99,10 +102,11 @@ var connection = mysql.createConnection({
                         },
                         function(err, res) {
                           if (err) throw err;
-                          console.log(res.affectedRows + " product inserted!\n");
-                         //queryAllProducts();
+                          console.log(res.affectedRows + " role inserted!\n");
+                         ques();
                         }
                       );
+                      
                 })
             }
             if (response.add === 'Employees') {
@@ -136,7 +140,7 @@ var connection = mysql.createConnection({
                         function(err, res) {
                           if (err) throw err;
                           console.log(res.affectedRows + " product inserted!\n");
-                         //queryAllProducts();
+                         ques();
                         }
                       );
                 })
@@ -163,6 +167,7 @@ var connection = mysql.createConnection({
                         console.log(res[i].id + " | " + res[i].name);
                       }
                       console.log("-----------------------------------");
+                      ques();
                     })
                   };
                 if (response.view === 'Roles') {
@@ -172,6 +177,7 @@ var connection = mysql.createConnection({
                     console.log(res[i].id + " | " + res[i].title + " | " + res[i].salary + " | " + res[i].department_id);
                     }
                     console.log("-----------------------------------");
+                    ques();
                 });
                 };
                 if (response.view === 'Employees') {
@@ -181,6 +187,7 @@ var connection = mysql.createConnection({
                         console.log(res[i].id + " | " + res[i].first_name + " | " + res[i].last_name+ " | " + res[i].role_id + " | " + res[i].manager_id);
                       }
                       console.log("-----------------------------------");
+                      ques();
                     });
                   };
                 })
@@ -193,7 +200,6 @@ var connection = mysql.createConnection({
              name: "update",
              type: "list",
              choices : [
-                 'Departments',
                  'Roles',
                  'Employees'
              ]
@@ -201,7 +207,7 @@ var connection = mysql.createConnection({
          ]).then(function(response) {
 
             //WHERE I LEFT OFF -- edit to only update employee roles
-               if (response.view === 'Departments') {
+               if (response.update === 'Roles') {
                 inquirer.prompt([
                     {
                       message: "Which faction would you like to view?",
@@ -222,7 +228,7 @@ var connection = mysql.createConnection({
                       console.log("-----------------------------------");
                     })
                   };
-                if (response.view === 'Roles') {
+                if (response.update === 'Employees') {
                 connection.query("SELECT * FROM role", function(err, res) {
                     if (err) throw err;
                     for (var i = 0; i < res.length; i++) {
@@ -231,22 +237,94 @@ var connection = mysql.createConnection({
                     console.log("-----------------------------------");
                 });
                 };
-                if (response.view === 'Employees') {
-                    connection.query("SELECT * FROM employee", function(err, res) {
-                      if (err) throw err;
-                      for (var i = 0; i < res.length; i++) {
-                        console.log(res[i].id + " | " + res[i].first_name + " | " + res[i].last_name+ " | " + res[i].role_id + " | " + res[i].manager_id);
-                      }
-                      console.log("-----------------------------------");
-                    });
-                  };
                 })
+    };
+    if (input.initial == "4) Delete") {
+      inquirer.prompt([
+        {
+          message: "Which faction would you like to delete from?",
+          name: "delete",
+          type: "list",
+          choices : [
+              'Department',
+              'Role',
+              'Employee'
+          ]
+        }
+      ]).then(function(response) {
+        if (response.delete === 'Department') {
+          connection.query("SELECT * FROM department", function(err, res) {
+            if (err) throw err;
+            for (var i = 0; i < res.length; i++) {
+              console.log(res[i].id + " | " + res[i].name);
+            }
+            console.log("-----------------------------------");
+          })
+            inquirer.prompt([
+            {
+              message: "Of the shown departments, enter the id of the one you wish to delete",
+              name: 'deleteDep',
+              type: 'input'
+            }
+            ]).then(function(res) {
+             connection.query("DELETE FROM department WHERE id =?", [res.deleteDep], function(err, res) {
+              if (err) throw(err);
+              ques();
+             }
+             )}
+           )
+        };
+        if (response.delete === 'Role') {
+          connection.query("SELECT * FROM role", function(err, res) {
+            if (err) throw err;
+            for (var i = 0; i < res.length; i++) {
+              console.log(res[i].id + " | " + res[i].name);
+            }
+            console.log("-----------------------------------");
+          })
+            inquirer.prompt([
+            {
+              message: "Of the shown roles, enter the id of the one you wish to delete",
+              name: 'deleteRole',
+              type: 'input'
+            }
+            ]).then(function(res) {
+             connection.query("DELETE FROM department WHERE id =?", [res.deleteRole], function(err, res) {
+              if (err) throw(err);
+              ques();
+             }
+             )}
+           )
+        };
+        if (response.delete === 'Employee') {
+          connection.query("SELECT * FROM employee", function(err, res) {
+            if (err) throw err;
+            for (var i = 0; i < res.length; i++) {
+              console.log(res[i].id + " | " + res[i].name);
+            }
+            console.log("-----------------------------------");
+          })
+            inquirer.prompt([
+            {
+              message: "Of the shown employees, enter the id of the one you wish to delete",
+              name: 'deleteEmp',
+              type: 'input'
+            }
+            ]).then(function(res) {
+             connection.query("DELETE FROM department WHERE id =?", [res.deleteEmp], function(err, res) {
+              if (err) throw(err);
+              ques();
+             }
+             )}
+           )
+        };
+
+      });
     };
   };
 
-/*
   function ques() {
-     return inquirer.prompt([
+    inquirer.prompt([
           {
           message: "Would you like to do something else?",
           type: 'list',
@@ -257,21 +335,20 @@ var connection = mysql.createConnection({
           ]
           }
       ]).then(function(response) {
-        if (response === 'Yes') {
+        if (response.else === 'Yes') {
             awaitInfo();
-        } else {
+        } 
+        else {
             console.log("\nGoodbye!");
             process.exit(0);
         }
-      
       })
   };
-*/
 
   async function awaitInfo() {
       try {
          const input = await promptUser(); 
-         generateAdditions(input);
+        generateAdditions(input);
 
       } catch (err) {
         console.log(err)
