@@ -205,28 +205,29 @@ var connection = mysql.createConnection({
              ]
            }
          ]).then(function(response) {
-
+           
             //WHERE I LEFT OFF -- edit to only update employee roles
                if (response.update === 'Roles') {
-                inquirer.prompt([
-                    {
-                      message: "Which faction would you like to view?",
-                      name: "view",
-                      type: "list",
-                      choices : [
-                          'Departments',
-                          'Roles',
-                          'Employees'
-                      ]
+                connection.query("SELECT * FROM role", function(err, res) {
+                  if (err) throw err;
+                  for (var i = 0; i < res.length; i++) {
+                    console.log(res[i].id + " | " + res[i].title + " | " + res[i].salary + " | " + res[i].department_id);
                     }
-                ]);
-                    connection.query("SELECT * FROM department", function(err, res) {
-                      if (err) throw err;
-                      for (var i = 0; i < res.length; i++) {
-                        console.log(res[i].id + " | " + res[i].name);
-                      }
-                      console.log("-----------------------------------");
-                    })
+                    console.log("-----------------------------------");
+                })
+                  inquirer.prompt([
+                  {
+                    message: "Of the shown roles, enter the ID of the one you wish you update",
+                    name: 'updateRole',
+                    type: 'input'
+                  }
+                  ]).then(function(res) {
+                   connection.query("", [res.deleteRole], function(err, res) {
+                    if (err) throw(err);
+                    ques();
+                   }
+                   )}
+                 )
                   };
                 if (response.update === 'Employees') {
                 connection.query("SELECT * FROM role", function(err, res) {
