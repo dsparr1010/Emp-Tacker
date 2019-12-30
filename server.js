@@ -14,7 +14,7 @@ var connection = mysql.createConnection({
   
   connection.connect(function(err) {
     if (err) throw err;
-    // console.log("connected as id " + connection.threadId + "\n");
+     console.log("connected as id " + connection.threadId + "\n");
      awaitInfo();
   });
 
@@ -25,8 +25,8 @@ var connection = mysql.createConnection({
         {
           message: "Welcome to your Company's database! Would you like to: \n" + 
           "1) Add to departments, roles, employees \n" +
-          "2) View departments, roles, and employees OR \n" + 
-          "3) Update employee roles \n"+
+          "2) View departments, roles, and employees \n" + 
+          "3) Update employees or roles \n"+
           "4) Delete a department, role, or employee \n",
           name: "initial",
           type: "list",
@@ -62,15 +62,14 @@ var connection = mysql.createConnection({
                     type: "input"
                  }
                 ]).then(function(result) {
-                    console.log("Inserting a new dept...\n");
-                    var query = connection.query(
+                    connection.query(
                         "INSERT INTO department SET ?",
                         {
                           name: result.depName
                         },
                         function(err, res) {
                           if (err) throw err;
-                          console.log(res.affectedRows + " department inserted!\n");
+                          console.log(res.affectedRows + " department added!\n");
                           ques();
                         }
                       );
@@ -92,8 +91,7 @@ var connection = mysql.createConnection({
                     type: "number"
                  }
                 ]).then(function(result) {
-                    console.log("Inserting a new role...\n");
-                    var query = connection.query(
+                    connection.query(
                         "INSERT INTO role SET ?",
                         {
                           title: result.addTitle,
@@ -102,7 +100,7 @@ var connection = mysql.createConnection({
                         },
                         function(err, res) {
                           if (err) throw err;
-                          console.log(res.affectedRows + " role inserted!\n");
+                          console.log(res.affectedRows + " role added!\n");
                          ques();
                         }
                       );
@@ -128,8 +126,7 @@ var connection = mysql.createConnection({
                     type: "input"
                  }
                 ]).then(function(result) {
-                    console.log("Inserting a new product...\n");
-                    var query = connection.query(
+                    connection.query(
                         "INSERT INTO employee SET ?",
                         {
                           first_name: result.empFirst,
@@ -139,7 +136,7 @@ var connection = mysql.createConnection({
                         },
                         function(err, res) {
                           if (err) throw err;
-                          console.log(res.affectedRows + " product inserted!\n");
+                          console.log(res.affectedRows + " employee added!");
                          ques();
                         }
                       );
@@ -163,7 +160,9 @@ var connection = mysql.createConnection({
                if (response.view === 'Departments') {
                     connection.query("SELECT * FROM department", function(err, res) {
                       if (err) throw err;
+                      console.log("ID      Name")
                       for (var i = 0; i < res.length; i++) {
+                        
                         console.log(res[i].id + " | " + res[i].name);
                       }
                       console.log("-----------------------------------");
@@ -171,10 +170,11 @@ var connection = mysql.createConnection({
                     })
                   };
                 if (response.view === 'Roles') {
-                connection.query("SELECT * FROM role", function(err, res) {
+                    connection.query("SELECT * FROM role", function(err, res) {
                     if (err) throw err;
+                    console.log("ID  Title  Salary  Department ID")
                     for (var i = 0; i < res.length; i++) {
-                    console.log(res[i].id + " | " + res[i].title + " | " + res[i].salary + " | " + res[i].department_id);
+                      console.log(res[i].id + " | " + res[i].title + " | " + res[i].salary + " | " + res[i].department_id);
                     }
                     console.log("-----------------------------------");
                     ques();
@@ -183,6 +183,7 @@ var connection = mysql.createConnection({
                 if (response.view === 'Employees') {
                     connection.query("SELECT * FROM employee", function(err, res) {
                       if (err) throw err;
+                      console.log("ID  First   Last    Role ID  DepartmentID")
                       for (var i = 0; i < res.length; i++) {
                         console.log(res[i].id + " | " + res[i].first_name + " | " + res[i].last_name+ " | " + res[i].role_id + " | " + res[i].manager_id);
                       }
@@ -205,11 +206,14 @@ var connection = mysql.createConnection({
              ]
            }
          ]).then(function(response) {
-           
-            //WHERE I LEFT OFF -- edit to only update employee roles
+           let x = ''; //id selected
+           let y = ''; //item to change
+           let z = ''; //user input to replace with
+
                if (response.update === 'Roles') {
                 connection.query("SELECT * FROM role", function(err, res) {
                   if (err) throw err;
+                  console.log("ID  Title  Salary  Department ID")
                   for (var i = 0; i < res.length; i++) {
                     console.log(res[i].id + " | " + res[i].title + " | " + res[i].salary + " | " + res[i].department_id);
                     }
@@ -218,25 +222,192 @@ var connection = mysql.createConnection({
                   inquirer.prompt([
                   {
                     message: "Of the shown roles, enter the ID of the one you wish you update",
-                    name: 'updateRole',
+                    name: 'updateId',
                     type: 'input'
                   }
                   ]).then(function(res) {
-                   connection.query("", [res.deleteRole], function(err, res) {
-                    if (err) throw(err);
-                    ques();
-                   }
-                   )}
+                    x = res.updateId;
+                    inquirer.prompt([
+                      {
+                        message: x +' selected - Update this employee title, salary, or department ID?',
+                        name:'update2',
+                        type: 'list',
+                        choices: [
+                          'Title',
+                          'Salary',
+                          'Department ID'
+                        ]
+                      }
+                    ]).then(function(res) {
+                      y = res.update2;
+                      inquirer.prompt([ 
+                        {
+                        message:'Update employee ' + y + ' to...?',
+                        name: 'update3',
+                        type: 'input',
+                        }
+                      ]).then(function(res) {
+                      z = res.update3;
+                      if(y === 'Title') {
+                        connection.query('UPDATE role SET ? WHERE ?',
+                        [
+                          {
+                            title: z
+                          },
+                          {
+                            id: x
+                          }
+                        ],
+                        function(err, res) {
+                          if (err) throw err;
+                          console.log("Role ID # " + x + " successfully updated " + y +" to " + z);
+                          ques();
+                        })
+                      }
+                      if(y === 'Salary') {
+                        connection.query('UPDATE role SET ? WHERE ?',
+                        [
+                          {
+                            salary: z
+                          },
+                          {
+                            id: x
+                          }
+                        ],
+                        function(err, res) {
+                          if (err) throw err;
+                          console.log("Role ID # " + x + " successfully updated " + y +" to " + z);
+                          ques();
+                        })
+                      }
+                      if(y === 'Department ID') {
+                        connection.query('UPDATE role SET ? WHERE ?',
+                        [
+                          {
+                            department_id: z
+                          },
+                          {
+                            id: x
+                          }
+                        ],
+                        function(err, res) {
+                          if (err) throw err;
+                          console.log("Role ID # " + x + " successfully updated " + y +" to " + z);
+                          ques();
+                        })
+                      }
+                    }) 
+                  })
+                }
                  )
                   };
                 if (response.update === 'Employees') {
-                connection.query("SELECT * FROM role", function(err, res) {
+                connection.query("SELECT * FROM employee", function(err, res) {
                     if (err) throw err;
+                    console.log("ID  First   Last    Role ID  DepartmentID")
                     for (var i = 0; i < res.length; i++) {
-                    console.log(res[i].id + " | " + res[i].title + " | " + res[i].salary + " | " + res[i].department_id);
+                      console.log(res[i].id + " | " + res[i].first_name + " | " + res[i].last_name+ " | " + res[i].role_id + " | " + res[i].manager_id);
                     }
                     console.log("-----------------------------------");
-                });
+                })
+                  inquirer.prompt([
+                    {
+                      message: "Of the shown roles, enter the ID of the employee you wish you update",
+                      name: 'updateId',
+                      type: 'input'
+                    }
+                    ]).then((res)=> {
+                      x = res.updateId;
+                      inquirer.prompt([
+                        {
+                          message: x +' selected - Change this employees first name, last name, role ID, or manager ID?',
+                          name:'update2',
+                          type: 'list',
+                          choices: [
+                            'First name',
+                            'Last name',
+                            'Role ID',
+                            'Manager ID'
+                          ]
+                        }
+                      ]).then((res) => {
+                        y = res.update2;
+                        return inquirer.prompt([ 
+                          {
+                          message:'Update employee ' + y + ' to...',
+                          name: 'update3',
+                          type: 'input',
+                          }
+                        ]).then((res) => {
+                        console.log(x)
+                        z = res.update3;
+                        if(y === 'First name') {
+                          connection.query('UPDATE employee SET ? WHERE ?',
+                          [
+                            {
+                              first_name: z
+                            },
+                            {
+                              id: x
+                            }
+                          ],
+                          function(err, res) {
+                            if (err) throw err;
+                            console.log(res.affectedRows+" " + y +" updated!\n");
+                            ques();
+                          })
+                        }
+                        if(y === 'Last name') {
+                          connection.query('UPDATE employee SET ? WHERE ?',
+                          [
+                            {
+                              last_name: z
+                            },
+                            {
+                              id: x
+                            }
+                          ],
+                          function(err, res) {
+                            if (err) throw err;
+                            console.log("Role ID # " + x + " successfully updated " + y +" to " + z);
+                            ques();
+                          })
+                        }
+                        if (y === 'Role ID') {
+                          connection.query('UPDATE employee SET ? WHERE ?',
+                          [
+                            {
+                              role_id: z
+                            },
+                            {
+                              id: x
+                            }
+                          ],
+                          function(err, res) {
+                            if (err) throw err;
+                            console.log("Role ID # " + x + " successfully updated " + y +" to " + z);
+                            ques();
+                          })
+                        }
+                        if(y === 'Manager ID') {
+                          connection.query('UPDATE employee SET ? WHERE ?',
+                          [
+                            {
+                              manager_id: z
+                            },
+                            {
+                              id: x
+                            }
+                          ],
+                          function(err, res) {
+                            if (err) throw err;
+                            console.log("Role ID # " + x + " successfully updated " + y +" to " + z);
+                            ques();
+                          })
+                        }
+                      })
+                    })
+                  })
                 };
                 })
     };
@@ -279,7 +450,7 @@ var connection = mysql.createConnection({
           connection.query("SELECT * FROM role", function(err, res) {
             if (err) throw err;
             for (var i = 0; i < res.length; i++) {
-              console.log(res[i].id + " | " + res[i].name);
+              console.log(res[i].id + " | " + res[i].title + " | " + res[i].salary + " | " + res[i].department_id);
             }
             console.log("-----------------------------------");
           })
@@ -301,7 +472,7 @@ var connection = mysql.createConnection({
           connection.query("SELECT * FROM employee", function(err, res) {
             if (err) throw err;
             for (var i = 0; i < res.length; i++) {
-              console.log(res[i].id + " | " + res[i].name);
+              console.log(res[i].id + " | " + res[i].first_name + " " + res[i].last_name);
             }
             console.log("-----------------------------------");
           })
@@ -357,67 +528,7 @@ var connection = mysql.createConnection({
     
   };
 
-  
   /*
-
-  function updateProduct() {
-  console.log("Updating all Rocky Road quantities...\n");
-  var query = connection.query(
-    "UPDATE products SET ? WHERE ?",
-    [
-      {
-        quantity: 100
-      },
-      {
-        flavor: "Rocky Road"
-      }
-    ],
-    function(err, res) {
-      if (err) throw err;
-      console.log(res.affectedRows + " products updated!\n");
-      // Call deleteProduct AFTER the UPDATE completes
-      deleteProduct();
-    }
-  );
-
-  // logs the actual query being run
-  console.log(query.sql);
-}
-
-  function queryAllProducts() {
-    connection.query("SELECT * FROM products", function(err, res) {
-      if (err) throw err;
-      for (var i = 0; i < res.length; i++) {
-        console.log(res[i].id + " | " + res[i].thing + " | " + res[i].starting_bid);
-      }
-      console.log("-----------------------------------");
-    });
-  }
-
-  function bidProducts() {
-    connection.query("SELECT * FROM products", function(err, res) {
-      if (err) throw err;
-      for (var i = 0; i < res.length; i++) {
-        console.log('Item: ' + res[i].thing + ' Starting Bid: ' + res[i].starting_bid
-        +'\n');
-      }
-    });
-  }
-
-Developers are often tasked with creating interfaces that make it easy for 
-non-developers to view and interact with information stored in databases. 
-Often these interfaces are known as **C**ontent **M**anagement **S**ystems. 
-In this homework assignment, your challenge is to architect and build a solution 
-for managing a company's employees using node, inquirer, and MySQL.
-
-Build a command-line application that at a minimum allows the user to:
-
-  * Add departments, roles, employees
-
-  * View departments, roles, employees
-
-  * Update employee roles
-
 Bonus points if you're able to:
 
   * Update employee managers
