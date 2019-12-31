@@ -1,7 +1,7 @@
 const inquirer = require ('inquirer');
-var mysql = require("mysql");
+const mysql = require("mysql");
 
-var connection = mysql.createConnection({
+const connection = mysql.createConnection({
     host: "localhost",
   
     port: 3306,
@@ -12,7 +12,7 @@ var connection = mysql.createConnection({
     database: "emp_tracker"
   });
   
-  connection.connect(function(err) {
+  connection.connect((err) => {
     if (err) throw err;
      console.log("connected as id " + connection.threadId + "\n");
      awaitInfo();
@@ -54,20 +54,20 @@ var connection = mysql.createConnection({
               'Employees'
           ]
         }
-      ]).then(function(response) {
+      ]).then((response) => {
             if (response.add === 'Departments') {
                  inquirer.prompt([ {
                     message: "What is the name of the department you would like to add?",
                     name: "depName",
                     type: "input"
                  }
-                ]).then(function(result) {
+                ]).then((result) => {
                     connection.query(
                         "INSERT INTO department SET ?",
                         {
                           name: result.depName
                         },
-                        function(err, res) {
+                        (err, res) => {
                           if (err) throw err;
                           console.log(res.affectedRows + " department added!\n");
                           ques();
@@ -90,7 +90,7 @@ var connection = mysql.createConnection({
                     name: "addDep",
                     type: "number"
                  }
-                ]).then(function(result) {
+                ]).then((result) => {
                     connection.query(
                         "INSERT INTO role SET ?",
                         {
@@ -98,7 +98,7 @@ var connection = mysql.createConnection({
                           salary: result.addSal,
                           department_id: result.addDep
                         },
-                        function(err, res) {
+                        (err, res) => {
                           if (err) throw err;
                           console.log(res.affectedRows + " role added!\n");
                          ques();
@@ -125,7 +125,7 @@ var connection = mysql.createConnection({
                     name: "empMan",
                     type: "input"
                  }
-                ]).then(function(result) {
+                ]).then((result) => {
                     connection.query(
                         "INSERT INTO employee SET ?",
                         {
@@ -134,7 +134,7 @@ var connection = mysql.createConnection({
                           role_id: result.empRole,
                           manager_id: result.empMan
                         },
-                        function(err, res) {
+                        (err, res) => {
                           if (err) throw err;
                           console.log(res.affectedRows + " employee added!");
                          ques();
@@ -156,12 +156,12 @@ var connection = mysql.createConnection({
                  'Employees'
              ]
            }
-         ]).then(function(response) {
+         ]).then((response) => {
                if (response.view === 'Departments') {
-                    connection.query("SELECT * FROM department", function(err, res) {
+                    connection.query("SELECT * FROM department", (err, res) => {
                       if (err) throw err;
                       console.log("ID      Name")
-                      for (var i = 0; i < res.length; i++) {
+                      for (let i = 0; i < res.length; i++) {
                         
                         console.log(res[i].id + " | " + res[i].name);
                       }
@@ -170,10 +170,10 @@ var connection = mysql.createConnection({
                     })
                   };
                 if (response.view === 'Roles') {
-                    connection.query("SELECT * FROM role", function(err, res) {
+                    connection.query("SELECT * FROM role", (err, res) => {
                     if (err) throw err;
                     console.log("ID  Title  Salary  Department ID")
-                    for (var i = 0; i < res.length; i++) {
+                    for (let i = 0; i < res.length; i++) {
                       console.log(res[i].id + " | " + res[i].title + " | " + res[i].salary + " | " + res[i].department_id);
                     }
                     console.log("-----------------------------------");
@@ -181,10 +181,10 @@ var connection = mysql.createConnection({
                 });
                 };
                 if (response.view === 'Employees') {
-                    connection.query("SELECT * FROM employee", function(err, res) {
+                    connection.query("SELECT * FROM employee", (err, res) => {
                       if (err) throw err;
                       console.log("ID  First   Last    Role ID  DepartmentID")
-                      for (var i = 0; i < res.length; i++) {
+                      for (let i = 0; i < res.length; i++) {
                         console.log(res[i].id + " | " + res[i].first_name + " | " + res[i].last_name+ " | " + res[i].role_id + " | " + res[i].manager_id);
                       }
                       console.log("-----------------------------------");
@@ -205,16 +205,16 @@ var connection = mysql.createConnection({
                  'Employees'
              ]
            }
-         ]).then(function(response) {
+         ]).then((response) => {
            let x = ''; //id selected
            let y = ''; //item to change
            let z = ''; //user input to replace with
 
                if (response.update === 'Roles') {
-                connection.query("SELECT * FROM role", function(err, res) {
+                connection.query("SELECT * FROM role", (err, res) => {
                   if (err) throw err;
                   console.log("ID  Title  Salary  Department ID")
-                  for (var i = 0; i < res.length; i++) {
+                  for (let i = 0; i < res.length; i++) {
                     console.log(res[i].id + " | " + res[i].title + " | " + res[i].salary + " | " + res[i].department_id);
                     }
                     console.log("-----------------------------------");
@@ -225,7 +225,7 @@ var connection = mysql.createConnection({
                     name: 'updateId',
                     type: 'input'
                   }
-                  ]).then(function(res) {
+                  ]).then((res) => {
                     x = res.updateId;
                     inquirer.prompt([
                       {
@@ -238,7 +238,7 @@ var connection = mysql.createConnection({
                           'Department ID'
                         ]
                       }
-                    ]).then(function(res) {
+                    ]).then((res) => {
                       y = res.update2;
                       inquirer.prompt([ 
                         {
@@ -246,7 +246,7 @@ var connection = mysql.createConnection({
                         name: 'update3',
                         type: 'input',
                         }
-                      ]).then(function(res) {
+                      ]).then((res) => {
                       z = res.update3;
                       if(y === 'Title') {
                         connection.query('UPDATE role SET ? WHERE ?',
@@ -258,7 +258,7 @@ var connection = mysql.createConnection({
                             id: x
                           }
                         ],
-                        function(err, res) {
+                        (err, res) => {
                           if (err) throw err;
                           console.log("Role ID # " + x + " successfully updated " + y +" to " + z);
                           ques();
@@ -274,7 +274,7 @@ var connection = mysql.createConnection({
                             id: x
                           }
                         ],
-                        function(err, res) {
+                        (err, res) => {
                           if (err) throw err;
                           console.log("Role ID # " + x + " successfully updated " + y +" to " + z);
                           ques();
@@ -290,7 +290,7 @@ var connection = mysql.createConnection({
                             id: x
                           }
                         ],
-                        function(err, res) {
+                        (err, res) => {
                           if (err) throw err;
                           console.log("Role ID # " + x + " successfully updated " + y +" to " + z);
                           ques();
@@ -302,10 +302,10 @@ var connection = mysql.createConnection({
                  )
                   };
                 if (response.update === 'Employees') {
-                connection.query("SELECT * FROM employee", function(err, res) {
+                connection.query("SELECT * FROM employee", (err, res) => {
                     if (err) throw err;
                     console.log("ID  First   Last    Role ID  DepartmentID")
-                    for (var i = 0; i < res.length; i++) {
+                    for (let i = 0; i < res.length; i++) {
                       console.log(res[i].id + " | " + res[i].first_name + " | " + res[i].last_name+ " | " + res[i].role_id + " | " + res[i].manager_id);
                     }
                     console.log("-----------------------------------");
@@ -316,7 +316,7 @@ var connection = mysql.createConnection({
                       name: 'updateId',
                       type: 'input'
                     }
-                    ]).then((res)=> {
+                    ]).then((res) => {
                       x = res.updateId;
                       inquirer.prompt([
                         {
@@ -351,7 +351,7 @@ var connection = mysql.createConnection({
                               id: x
                             }
                           ],
-                          function(err, res) {
+                          (err, res) => {
                             if (err) throw err;
                             console.log(res.affectedRows+" " + y +" updated!\n");
                             ques();
@@ -367,7 +367,7 @@ var connection = mysql.createConnection({
                               id: x
                             }
                           ],
-                          function(err, res) {
+                          (err, res) => {
                             if (err) throw err;
                             console.log("Role ID # " + x + " successfully updated " + y +" to " + z);
                             ques();
@@ -383,7 +383,7 @@ var connection = mysql.createConnection({
                               id: x
                             }
                           ],
-                          function(err, res) {
+                          (err, res) => {
                             if (err) throw err;
                             console.log("Role ID # " + x + " successfully updated " + y +" to " + z);
                             ques();
@@ -399,7 +399,7 @@ var connection = mysql.createConnection({
                               id: x
                             }
                           ],
-                          function(err, res) {
+                          (err, res) => {
                             if (err) throw err;
                             console.log("Role ID # " + x + " successfully updated " + y +" to " + z);
                             ques();
@@ -423,11 +423,11 @@ var connection = mysql.createConnection({
               'Employee'
           ]
         }
-      ]).then(function(response) {
+      ]).then((response) => {
         if (response.delete === 'Department') {
-          connection.query("SELECT * FROM department", function(err, res) {
+          connection.query("SELECT * FROM department", (err, res) => {
             if (err) throw err;
-            for (var i = 0; i < res.length; i++) {
+            for (let i = 0; i < res.length; i++) {
               console.log(res[i].id + " | " + res[i].name);
             }
             console.log("-----------------------------------");
@@ -438,8 +438,8 @@ var connection = mysql.createConnection({
               name: 'deleteDep',
               type: 'input'
             }
-            ]).then(function(res) {
-             connection.query("DELETE FROM department WHERE id =?", [res.deleteDep], function(err, res) {
+            ]).then((res) => {
+             connection.query("DELETE FROM department WHERE id =?", [res.deleteDep], (err, res) => {
               if (err) throw(err);
               ques();
              }
@@ -447,9 +447,9 @@ var connection = mysql.createConnection({
            )
         };
         if (response.delete === 'Role') {
-          connection.query("SELECT * FROM role", function(err, res) {
+          connection.query("SELECT * FROM role", (err, res) => {
             if (err) throw err;
-            for (var i = 0; i < res.length; i++) {
+            for (let i = 0; i < res.length; i++) {
               console.log(res[i].id + " | " + res[i].title + " | " + res[i].salary + " | " + res[i].department_id);
             }
             console.log("-----------------------------------");
@@ -460,8 +460,8 @@ var connection = mysql.createConnection({
               name: 'deleteRole',
               type: 'input'
             }
-            ]).then(function(res) {
-             connection.query("DELETE FROM department WHERE id =?", [res.deleteRole], function(err, res) {
+            ]).then((res) => {
+             connection.query("DELETE FROM department WHERE id =?", [res.deleteRole], (err, res) => {
               if (err) throw(err);
               ques();
              }
@@ -469,9 +469,9 @@ var connection = mysql.createConnection({
            )
         };
         if (response.delete === 'Employee') {
-          connection.query("SELECT * FROM employee", function(err, res) {
+          connection.query("SELECT * FROM employee", (err, res) => {
             if (err) throw err;
-            for (var i = 0; i < res.length; i++) {
+            for (let i = 0; i < res.length; i++) {
               console.log(res[i].id + " | " + res[i].first_name + " " + res[i].last_name);
             }
             console.log("-----------------------------------");
@@ -482,15 +482,14 @@ var connection = mysql.createConnection({
               name: 'deleteEmp',
               type: 'input'
             }
-            ]).then(function(res) {
-             connection.query("DELETE FROM department WHERE id =?", [res.deleteEmp], function(err, res) {
+            ]).then((res) => {
+             connection.query("DELETE FROM department WHERE id =?", [res.deleteEmp], (err, res) => {
               if (err) throw(err);
               ques();
              }
              )}
            )
         };
-
       });
     };
   };
@@ -506,7 +505,7 @@ var connection = mysql.createConnection({
               'No'
           ]
           }
-      ]).then(function(response) {
+      ]).then((response) => {
         if (response.else === 'Yes') {
             awaitInfo();
         } 
@@ -525,18 +524,4 @@ var connection = mysql.createConnection({
       } catch (err) {
         console.log(err)
       }
-    
   };
-
-  /*
-Bonus points if you're able to:
-
-  * Update employee managers
-
-  * View employees by manager
-
-  * Delete departments, roles, and employees
-
-  * View the total utilized budget of a department -- ie the combined salaries of all employees in that department
-
-  */
