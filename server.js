@@ -8,7 +8,7 @@ const connection = mysql.createConnection({
 
     user: "root",
 
-    password: "DebbieDoo",
+    password: "",
     database: "emp_tracker"
   });
   
@@ -524,5 +524,4 @@ const connection = mysql.createConnection({
       } catch (err) {
         console.log(err)
       }
-    
   };
