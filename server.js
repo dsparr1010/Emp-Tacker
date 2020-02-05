@@ -1,6 +1,8 @@
 const inquirer = require ('inquirer');
 const mysql = require("mysql");
+const connection = require('./config/connection');
 
+/*
 const connection = mysql.createConnection({
     host: "localhost",
   
@@ -17,7 +19,7 @@ const connection = mysql.createConnection({
      console.log("connected as id " + connection.threadId + "\n");
      awaitInfo();
   });
-
+*/
 
   function promptUser() {
     return inquirer
@@ -525,3 +527,5 @@ const connection = mysql.createConnection({
         console.log(err)
       }
   };
+
+  awaitInfo();
