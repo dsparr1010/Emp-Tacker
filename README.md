@@ -5,7 +5,7 @@ A command-line application that allows the user to:
 
   * View departments, roles, employees
 
-  * Update employee roles
+  * Update employee roles and employees
 
   * Delete departments, roles, and employees
 
@@ -24,6 +24,7 @@ So that I can organize and plan my business
 * NodeJS
     * inquirer
     * mysql
+    * dotenv
 
 ## Installation
 ```bash

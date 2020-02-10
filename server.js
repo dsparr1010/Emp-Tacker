@@ -212,7 +212,7 @@ const connection = require('./config/connection');
                     x = res.updateId;
                     inquirer.prompt([
                       {
-                        message: x +' selected - Update this employee title, salary, or department ID?',
+                        message: `ID ${x} selected - Update this employee title, salary, or department ID?`,
                         name:'update2',
                         type: 'list',
                         choices: [
@@ -444,7 +444,8 @@ const connection = require('./config/connection');
               type: 'input'
             }
             ]).then((res) => {
-             connection.query("DELETE FROM department WHERE id =?", [res.deleteRole], (err, res) => {
+              console.log(res.deleteRole);
+             connection.query("DELETE FROM role WHERE id =?", [res.deleteRole], (err, res) => {
               if (err) throw(err);
               ques();
              }
@@ -466,7 +467,7 @@ const connection = require('./config/connection');
               type: 'input'
             }
             ]).then((res) => {
-             connection.query("DELETE FROM department WHERE id =?", [res.deleteEmp], (err, res) => {
+             connection.query("DELETE FROM employee WHERE id =?", [res.deleteEmp], (err, res) => {
               if (err) throw(err);
               ques();
              }
