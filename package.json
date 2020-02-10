@@ -11,7 +11,7 @@
     "type": "git",
     "url": "git+https://github.com/dsparr1010/Emp-Tacker.git"
   },
-  "author": "",
+  "author": "Debra Sparr",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/dsparr1010/Emp-Tacker/issues"
@@ -21,5 +21,8 @@
     "dotenv": "^8.2.0",
     "inquirer": "^7.0.0",
     "mysql": "^2.17.1"
+  },
+  "engines": {
+    "node": "10.x"
   }
 }
