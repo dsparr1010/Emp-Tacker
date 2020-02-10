@@ -31,3 +31,8 @@ So that I can organize and plan my business
 npm install
 ```
 
+## Screenshot
+
+![screenshot](images/emp-tracker1.PNG)
+
+![screenshot](images/emp-tracker2.PNG)
